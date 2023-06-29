@@ -85,22 +85,29 @@ func main() {
 				log.Printf("Latest tag: %+v\n", latestTag)
 			}
 
-			// Always bump RC
-			// v0.2.3 -> v0.2.3-RC1
-			// v0.2.3-RC2 -> v0.2.3-RC3
-			newPreRelease := "RC1"
+			// If latest tag don't have RC
+			// Bump patch and add RC1
+			// v0.2.0, v0.1.0-RC2, v0.1.0-RC1 -> v0.2.1-RC1
+			// Otherwise latest tag already have RC
+			// Only bump RC
+			// v0.2.0-RC1, v0.2.0, v0.1.0-RC2, v0.1.0-RC1 -> v0.2.0-RC2
 			latestPrerelease := latestTag.Prerelease()
 			if latestPrerelease != "" && strings.HasPrefix(latestPrerelease, "RC") {
 				latestPrereleaseNum := cast.ToInt(strings.TrimLeft(latestPrerelease, "RC"))
-				newPreRelease = fmt.Sprintf("RC%d", latestPrereleaseNum+1)
+				newTagStr = fmt.Sprintf("v%d.%d.%d-RC%d",
+					latestTag.Major(),
+					latestTag.Minor(),
+					latestTag.Patch(),
+					latestPrereleaseNum+1,
+				)
+			} else {
+				newTagStr = fmt.Sprintf("v%d.%d.%d-RC1",
+					latestTag.Major(),
+					latestTag.Minor(),
+					latestTag.Patch()+1,
+				)
 			}
 
-			newTagStr = fmt.Sprintf("v%d.%d.%d-%s",
-				latestTag.Major(),
-				latestTag.Minor(),
-				latestTag.Patch(),
-				newPreRelease,
-			)
 		}
 	}
 	if flagDebug {
