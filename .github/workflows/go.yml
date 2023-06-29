@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: "stable"
-      - run: go build ./cmd/changeloguru
+      - run: go build ./cmd/bump00
   golangci-lint:
     name: golangci-lint
     runs-on: ubuntu-latest
