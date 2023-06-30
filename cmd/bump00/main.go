@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"sort"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -38,81 +39,24 @@ func main() {
 	}
 
 	// List tags with reversed sort for semver
-	gitOuput, err = exec.CommandContext(ctx, "git", "tag", "--sort=-version:refname").CombinedOutput()
+	gitOuput, err = exec.CommandContext(ctx, "git", "tag").CombinedOutput()
 	if err != nil {
 		log.Fatalln("Failed to git list tags: ", err)
 	} else if flagDebug {
 		log.Printf("git list tags:\n%s\n", string(gitOuput))
 	}
 
-	tags := make([]*semver.Version, 0, 100)
+	rawTags := make([]string, 0, 100)
 	for _, rawTag := range strings.Split(string(gitOuput), "\n") {
-		tag, err := semver.NewVersion(rawTag)
-		if err != nil {
+		rawTag = strings.TrimSpace(rawTag)
+		if rawTag == "" {
 			continue
 		}
-		tags = append(tags, tag)
-	}
-	if flagDebug {
-		log.Printf("tags: %+v\n", tags)
+
+		rawTags = append(rawTags, rawTag)
 	}
 
-	var newTagStr string
-	if flagRelease {
-		// Default tag for release
-		newTagStr = "v0.0.1"
-		if len(tags) > 0 {
-			latestTag := tags[0]
-			if flagDebug {
-				log.Printf("Latest tag: %+v\n", latestTag)
-			}
-
-			// Ignore prerelease, always bump patch
-			// 0.2.3 -> 0.2.4
-			// v0.2.3-RC2 -> v0.2.4
-			newTagStr = fmt.Sprintf("v%d.%d.%d",
-				latestTag.Major(),
-				latestTag.Minor(),
-				latestTag.Patch()+1,
-			)
-		}
-	} else {
-		// Default tag for RC
-		newTagStr = "v0.0.1-RC1"
-		if len(tags) > 0 {
-			latestTag := tags[0]
-			if flagDebug {
-				log.Printf("Latest tag: %+v\n", latestTag)
-			}
-
-			// If latest tag don't have RC
-			// Bump patch and add RC1
-			// v0.2.0, v0.1.0-RC2, v0.1.0-RC1 -> v0.2.1-RC1
-			// Otherwise latest tag already have RC
-			// Only bump RC
-			// v0.2.0-RC1, v0.2.0, v0.1.0-RC2, v0.1.0-RC1 -> v0.2.0-RC2
-			latestPrerelease := latestTag.Prerelease()
-			if latestPrerelease != "" && strings.HasPrefix(latestPrerelease, "RC") {
-				latestPrereleaseNum := cast.ToInt(strings.TrimLeft(latestPrerelease, "RC"))
-				newTagStr = fmt.Sprintf("v%d.%d.%d-RC%d",
-					latestTag.Major(),
-					latestTag.Minor(),
-					latestTag.Patch(),
-					latestPrereleaseNum+1,
-				)
-			} else {
-				newTagStr = fmt.Sprintf("v%d.%d.%d-RC1",
-					latestTag.Major(),
-					latestTag.Minor(),
-					latestTag.Patch()+1,
-				)
-			}
-
-		}
-	}
-	if flagDebug {
-		log.Printf("New tag: %+v\n", newTagStr)
-	}
+	newTagStr := genNewTag(rawTags, flagDebug, flagRelease)
 
 	if !flagDryRun {
 		// Tag
@@ -136,4 +80,98 @@ func main() {
 		log.Println("Will tag: ", newTagStr)
 		log.Println("Will push tag: ", newTagStr)
 	}
+}
+
+func genNewTag(rawTags []string, isDebug, isRelease bool) string {
+	tags := make([]*semver.Version, 0, 100)
+	for _, rawTag := range rawTags {
+		tag, err := semver.NewVersion(rawTag)
+		if err != nil {
+			continue
+		}
+		tags = append(tags, tag)
+	}
+
+	sort.Sort(semver.Collection(tags))
+
+	if isDebug {
+		log.Printf("tags: %+v\n", tags)
+	}
+
+	var newTagStr string
+	if isRelease {
+		// Default tag for release
+		newTagStr = "v0.0.1"
+		if len(tags) > 0 {
+			latestTag := tags[len(tags)-1]
+			if isDebug {
+				log.Printf("Latest tag: %+v\n", latestTag)
+			}
+
+			if latestTag.Prerelease() == "" {
+				// Latest tag is release
+				// Only bump patch
+				// v0.2.3 -> v0.2.4
+				newTagStr = fmt.Sprintf("v%d.%d.%d",
+					latestTag.Major(),
+					latestTag.Minor(),
+					latestTag.Patch()+1,
+				)
+			} else {
+				// Latest tag is RC
+				// Release tag is missing
+				// Only remove RC
+				// v0.2.3-RC1 -> v0.2.3
+				newTagStr = fmt.Sprintf("v%d.%d.%d",
+					latestTag.Major(),
+					latestTag.Minor(),
+					latestTag.Patch(),
+				)
+			}
+		}
+	} else {
+		// Default tag for RC
+		newTagStr = "v0.0.1-RC1"
+		if len(tags) > 0 {
+			latestTag := tags[len(tags)-1]
+			if isDebug {
+				log.Printf("Latest tag: %+v\n", latestTag)
+			}
+
+			// If latest tag don't have RC
+			// Bump patch and add RC1
+			// v0.2.0, v0.1.0-RC2, v0.1.0-RC1 -> v0.2.1-RC1
+			// Otherwise latest tag already have RC
+			// Only bump RC
+			// v0.2.0-RC1, v0.2.0, v0.1.0-RC2, v0.1.0-RC1 -> v0.2.0-RC2
+			latestPrerelease := latestTag.Prerelease()
+			if latestPrerelease == "" {
+				// Latest tag is already release
+				// Bump patch with RC1
+				// v0.2.3 -> v0.2.4-RC1
+				newTagStr = fmt.Sprintf("v%d.%d.%d-RC1",
+					latestTag.Major(),
+					latestTag.Minor(),
+					latestTag.Patch()+1,
+				)
+			} else {
+				// Latest tag is RC
+				// Release tag is missing
+				// Only bump RC
+				// v0.2.3-RC1 -> v0.2.3-RC2
+				latestPrereleaseNum := cast.ToInt(strings.TrimLeft(latestPrerelease, "RC"))
+				newTagStr = fmt.Sprintf("v%d.%d.%d-RC%d",
+					latestTag.Major(),
+					latestTag.Minor(),
+					latestTag.Patch(),
+					latestPrereleaseNum+1,
+				)
+			}
+		}
+	}
+	if isDebug {
+		log.Println("New tag: ", newTagStr)
+	}
+
+	return newTagStr
 }
