@@ -8,17 +8,20 @@ So I made `bump00`, `bump01`, ... as time goes by.
 
 ## `bump00`
 
-RC mode:
+Install:
 
 ```sh
-bump00 --rc
+go install github.com/haunt98/bumper-go/cmd/bump00@latest
 ```
 
-Only work for services that need RC for testing.
-When deploy production, need to create release from GitHub/GitLab.
+RC mode aka default mode:
 
-- If latest version don't have RC, it will bump patch version with `RC1`: `v1.2.3` -> `v1.2.4-RC1`
-- If latest version already have RC, it will only bump RC version: `v1.2.4-RC1` -> `v1.2.4-RC2` -> `v1.2.4-RC3`
+```sh
+bump00
+```
+
+- If latest tag is release, it will bump patch with `RC1`: `v1.2.3` -> `v1.2.4-RC1`
+- If latest tag is RC, it will only bump RC: `v1.2.4-RC1` -> `v1.2.4-RC2` -> `v1.2.4-RC3`
 
 Release mode:
 
@@ -26,9 +29,7 @@ Release mode:
 bump00 --release
 ```
 
-Only work for common, grpc pkg which don't need RC (version only have major, minor, patch).
+- If latest tag is release, it will bump patch: `v1.2.3` -> `v1.2.4`
+- If latest tag is RC, it will only remove RC: `v1.2.4-RC1` -> `v1.2.4`
 
-- Only bump patch: `v1.2.3` -> `v1.2.4` -> `v1.2.5`
-
-Do not **mixed** RC and release mode.
-They will fuck you up for good.
+You can **mixed** RC and release mode.
