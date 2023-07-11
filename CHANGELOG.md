@@ -2,6 +2,18 @@
 
 ## v0.0.2 (2023-07-11)
 
+### Others
+
+- chore(changelog): generate v0.0.2 (2023-07-11)
+
+- chore: you can mixed (2023-06-30)
+
+- bump00: update logic (2023-06-30)
+
+- chore(changelog): generate v0.0.1 (2023-06-30)
+
+## v0.0.2 (2023-07-11)
+
 ### Added
 
 - feat: add bump00 explain (2023-06-30)
