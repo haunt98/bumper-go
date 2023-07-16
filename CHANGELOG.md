@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.0.3 (2023-07-16)
+
+### Added
+
+- feat: print latest tag, new tag (2023-07-16)
+
+### Others
+
+- chore(changelog): generate v0.0.2 (2023-07-11)
+
+- chore(changelog): generate v0.0.2 (2023-07-11)
+
 ## v0.0.2 (2023-07-11)
 
 ### Others
