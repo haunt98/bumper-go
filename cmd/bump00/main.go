@@ -11,7 +11,11 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/spf13/cast"
+
+	"github.com/make-go-great/color-go"
 )
+
+const NameApp = "bump00"
 
 var (
 	flagDebug   bool
@@ -33,7 +37,7 @@ func main() {
 	// Make sure we have latest tags from default remote
 	gitOuput, err := exec.CommandContext(ctx, "git", "fetch", "--tags").CombinedOutput()
 	if err != nil {
-		log.Fatalln("Failed to git fetch tags: ", err)
+		color.PrintAppError(NameApp, fmt.Sprintf("Failed to git fetch tags: %s", err.Error()))
 	} else if flagDebug {
 		log.Printf("git fetch tags:\n%s\n", string(gitOuput))
 	}
@@ -41,7 +45,7 @@ func main() {
 	// List tags with reversed sort for semver
 	gitOuput, err = exec.CommandContext(ctx, "git", "tag").CombinedOutput()
 	if err != nil {
-		log.Fatalln("Failed to git list tags: ", err)
+		color.PrintAppError(NameApp, fmt.Sprintf("Failed to git list tags: %s", err.Error()))
 	} else if flagDebug {
 		log.Printf("git list tags:\n%s\n", string(gitOuput))
 	}
@@ -63,7 +67,7 @@ func main() {
 		// TODO: Handle if tag need comment
 		gitOuput, err = exec.CommandContext(ctx, "git", "tag", newTagStr).CombinedOutput()
 		if err != nil {
-			log.Fatalln("Failed to git tag: ", err)
+			color.PrintAppError(NameApp, fmt.Sprintf("Failed to git tag: %s", err.Error()))
 		} else if flagDebug {
 			log.Printf("git tag:\n%s\n", string(gitOuput))
 		}
@@ -72,7 +76,7 @@ func main() {
 		// TODO: Handle different remote
 		gitOuput, err = exec.CommandContext(ctx, "git", "push", "origin", newTagStr).CombinedOutput()
 		if err != nil {
-			log.Fatalln("Failed to git push: ", err)
+			color.PrintAppError(NameApp, fmt.Sprintf("Failed to git push: %s", err.Error()))
 		} else if flagDebug {
 			log.Printf("git push:\n%s\n", string(gitOuput))
 		}
@@ -104,9 +108,7 @@ func genNewTag(rawTags []string, isDebug, isRelease bool) string {
 		newTagStr = "v0.0.1"
 		if len(tags) > 0 {
 			latestTag := tags[len(tags)-1]
-			if isDebug {
-				log.Printf("Latest tag: %+v\n", latestTag)
-			}
+			color.PrintAppOK(NameApp, fmt.Sprintf("Latest tag: %s", latestTag.String()))
 
 			if latestTag.Prerelease() == "" {
 				// Latest tag is release
@@ -134,9 +136,7 @@ func genNewTag(rawTags []string, isDebug, isRelease bool) string {
 		newTagStr = "v0.0.1-RC1"
 		if len(tags) > 0 {
 			latestTag := tags[len(tags)-1]
-			if isDebug {
-				log.Printf("Latest tag: %+v\n", latestTag)
-			}
+			color.PrintAppOK(NameApp, fmt.Sprintf("Latest tag: %s", latestTag.String()))
 
 			// If latest tag don't have RC
 			// Bump patch and add RC1
@@ -169,9 +169,8 @@ func genNewTag(rawTags []string, isDebug, isRelease bool) string {
 			}
 		}
 	}
-	if isDebug {
-		log.Println("New tag: ", newTagStr)
-	}
+
+	color.PrintAppOK(NameApp, fmt.Sprintf("New tag: %s", newTagStr))
 
 	return newTagStr
 }
