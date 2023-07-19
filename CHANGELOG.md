@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.0.4 (2023-07-19)
+
+### Fixed
+
+- fix: compare RC (2023-07-19)
+
+### Others
+
+- chore(changelog): generate v0.0.3 (2023-07-16)
+
 ## v0.0.3 (2023-07-16)
 
 ### Added
