@@ -1,6 +1,11 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/Masterminds/semver/v3"
+	"github.com/stretchr/testify/assert"
+)
 
 func TestGenNewTag(t *testing.T) {
 	tests := []struct {
@@ -80,9 +85,78 @@ func TestGenNewTag(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			got := genNewTag(tc.rawTags, false, tc.isRelease)
-			if got != tc.want {
-				t.Errorf("got %v, want %v", got, tc.want)
-			}
+			assert.Equal(t, tc.want, got)
+		})
+	}
+}
+
+func TestSortTags(t *testing.T) {
+	tests := []struct {
+		name string
+		tags []*semver.Version
+		want []*semver.Version
+	}{
+		{
+			name: "only release",
+			tags: []*semver.Version{
+				semver.MustParse("0.0.1"),
+				semver.MustParse("0.0.2"),
+				semver.MustParse("0.0.3"),
+			},
+			want: []*semver.Version{
+				semver.MustParse("0.0.3"),
+				semver.MustParse("0.0.2"),
+				semver.MustParse("0.0.1"),
+			},
+		},
+		{
+			name: "only rc",
+			tags: []*semver.Version{
+				semver.MustParse("0.0.1-RC1"),
+				semver.MustParse("0.0.1-RC2"),
+				semver.MustParse("0.0.1-RC9"),
+				semver.MustParse("0.0.1-RC11"),
+			},
+			want: []*semver.Version{
+				semver.MustParse("0.0.1-RC11"),
+				semver.MustParse("0.0.1-RC9"),
+				semver.MustParse("0.0.1-RC2"),
+				semver.MustParse("0.0.1-RC1"),
+			},
+		},
+		{
+			name: "mixed",
+			tags: []*semver.Version{
+				semver.MustParse("0.0.1-RC1"),
+				semver.MustParse("0.0.1-RC2"),
+				semver.MustParse("0.0.1-RC9"),
+				semver.MustParse("0.0.1-RC11"),
+				semver.MustParse("0.0.2"),
+				semver.MustParse("0.0.3-RC1"),
+				semver.MustParse("0.0.3-RC2"),
+				semver.MustParse("0.0.3-RC20"),
+				semver.MustParse("0.0.3-RC100"),
+				semver.MustParse("0.0.3"),
+			},
+			want: []*semver.Version{
+				semver.MustParse("0.0.3"),
+				semver.MustParse("0.0.3-RC100"),
+				semver.MustParse("0.0.3-RC20"),
+				semver.MustParse("0.0.3-RC2"),
+				semver.MustParse("0.0.3-RC1"),
+				semver.MustParse("0.0.2"),
+				semver.MustParse("0.0.1-RC11"),
+				semver.MustParse("0.0.1-RC9"),
+				semver.MustParse("0.0.1-RC2"),
+				semver.MustParse("0.0.1-RC1"),
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			sortTags(tc.tags)
+			assert.Equal(t, tc.want, tc.tags)
 		})
 	}
 }

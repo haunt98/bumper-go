@@ -96,8 +96,7 @@ func genNewTag(rawTags []string, isDebug, isRelease bool) string {
 		tags = append(tags, tag)
 	}
 
-	sort.Sort(semver.Collection(tags))
-
+	sortTags(tags)
 	if isDebug {
 		log.Printf("tags: %+v\n", tags)
 	}
@@ -107,7 +106,7 @@ func genNewTag(rawTags []string, isDebug, isRelease bool) string {
 		// Default tag for release
 		newTagStr = "v0.0.1"
 		if len(tags) > 0 {
-			latestTag := tags[len(tags)-1]
+			latestTag := tags[0]
 			color.PrintAppOK(NameApp, fmt.Sprintf("Latest tag: %s", latestTag.String()))
 
 			if latestTag.Prerelease() == "" {
@@ -135,7 +134,7 @@ func genNewTag(rawTags []string, isDebug, isRelease bool) string {
 		// Default tag for RC
 		newTagStr = "v0.0.1-RC1"
 		if len(tags) > 0 {
-			latestTag := tags[len(tags)-1]
+			latestTag := tags[0]
 			color.PrintAppOK(NameApp, fmt.Sprintf("Latest tag: %s", latestTag.String()))
 
 			// If latest tag don't have RC
@@ -173,4 +172,35 @@ func genNewTag(rawTags []string, isDebug, isRelease bool) string {
 	color.PrintAppOK(NameApp, fmt.Sprintf("New tag: %s", newTagStr))
 
 	return newTagStr
+}
+
+// Copy and modified from semver
+type Collection00 []*semver.Version
+
+func (c Collection00) Len() int {
+	return len(c)
+}
+
+func (c Collection00) Less(i, j int) bool {
+	// Compare RC
+	if c[i].Major() == c[j].Major() &&
+		c[i].Minor() == c[j].Minor() &&
+		c[i].Patch() == c[j].Patch() &&
+		strings.HasPrefix(c[i].Prerelease(), "RC") &&
+		strings.HasPrefix(c[j].Prerelease(), "RC") {
+		rcI := cast.ToInt(strings.TrimPrefix(c[i].Prerelease(), "RC"))
+		rcJ := cast.ToInt(strings.TrimPrefix(c[j].Prerelease(), "RC"))
+		return rcI > rcJ
+	}
+
+	return c[i].GreaterThan(c[j])
+}
+
+func (c Collection00) Swap(i, j int) {
+	c[i], c[j] = c[j], c[i]
+}
+
+// Sort from latest to earliest
+func sortTags(tags []*semver.Version) {
+	sort.Sort(Collection00(tags))
 }
