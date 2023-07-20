@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v0.0.5 (2023-07-20)
+
+### Others
+
+- chore: fix typoo (2023-07-20)
+
+- chore(changelog): generate v0.0.4 (2023-07-19)
+
 ## v0.0.4 (2023-07-19)
 
 ### Fixed
