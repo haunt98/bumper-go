@@ -81,8 +81,8 @@ func main() {
 			log.Printf("git push:\n%s\n", string(gitOuput))
 		}
 	} else {
-		log.Println("Will tag: ", newTagStr)
-		log.Println("Will push tag: ", newTagStr)
+		log.Println("Will tag:", newTagStr)
+		log.Println("Will push tag:", newTagStr)
 	}
 }
 
