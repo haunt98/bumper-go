@@ -62,7 +62,7 @@ func genNewTag(rawTags []string, isRelease bool) string {
 		newTagStr = "v0.0.1"
 		if len(tags) > 0 {
 			latestTag := tags[0]
-			color.PrintAppOK(NameApp, fmt.Sprintf("Latest tag: %s", latestTag.String()))
+			color.PrintAppOK(NameApp, fmt.Sprintf("Current latest tag: %s", latestTag.String()))
 
 			if latestTag.Prerelease() == "" {
 				// Latest tag is release
@@ -90,7 +90,7 @@ func genNewTag(rawTags []string, isRelease bool) string {
 		newTagStr = "v0.0.1-RC1"
 		if len(tags) > 0 {
 			latestTag := tags[0]
-			color.PrintAppOK(NameApp, fmt.Sprintf("Latest tag: %s", latestTag.String()))
+			color.PrintAppOK(NameApp, fmt.Sprintf("Current latest tag: %s", latestTag.String()))
 
 			// If latest tag don't have RC
 			// Bump patch and add RC1
@@ -123,6 +123,7 @@ func genNewTag(rawTags []string, isRelease bool) string {
 			}
 		}
 	}
+	color.PrintAppOK(NameApp, fmt.Sprintf("New tag: %s", newTagStr))
 
 	return newTagStr
 }

@@ -3,11 +3,8 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log/slog"
 	"os"
-
-	"github.com/make-go-great/color-go"
 )
 
 const NameApp = "bump00"
@@ -55,7 +52,6 @@ func main() {
 	}
 
 	newTag := genNewTag(rawTags, flagRelease)
-	color.PrintAppOK(NameApp, fmt.Sprintf("New tag: %s", newTag))
 
 	if flagDryRun {
 		return
