@@ -7,89 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenNewTag(t *testing.T) {
-	tests := []struct {
-		name      string
-		rawTags   []string
-		isRelease bool
-		want      string
-	}{
-		{
-			name:      "release empty",
-			rawTags:   []string{},
-			isRelease: true,
-			want:      "v0.0.1",
-		},
-		{
-			name: "release with previous release",
-			rawTags: []string{
-				"v0.0.1",
-			},
-			isRelease: true,
-			want:      "v0.0.2",
-		},
-		{
-			name: "release with previous release",
-			rawTags: []string{
-				"v0.0.1",
-				"v0.0.1-RC1",
-			},
-			isRelease: true,
-			want:      "v0.0.2",
-		},
-		{
-			name: "release with previous rc",
-			rawTags: []string{
-				"v0.0.1",
-				"v0.0.1-RC1",
-				"v0.0.2-RC1",
-			},
-			isRelease: true,
-			want:      "v0.0.2",
-		},
-		{
-			name:      "rc empty",
-			rawTags:   []string{},
-			isRelease: false,
-			want:      "v0.0.1-RC1",
-		},
-		{
-			name: "rc with previous release",
-			rawTags: []string{
-				"v0.0.1",
-			},
-			isRelease: false,
-			want:      "v0.0.2-RC1",
-		},
-		{
-			name: "rc with previous release",
-			rawTags: []string{
-				"v0.0.1",
-				"v0.0.1-RC1",
-			},
-			isRelease: false,
-			want:      "v0.0.2-RC1",
-		},
-		{
-			name: "rc with previous rc",
-			rawTags: []string{
-				"v0.0.1",
-				"v0.0.1-RC1",
-				"v0.0.2-RC1",
-			},
-			isRelease: false,
-			want:      "v0.0.2-RC2",
-		},
-	}
-
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			got := genNewTag(tc.rawTags, tc.isRelease)
-			assert.Equal(t, tc.want, got)
-		})
-	}
-}
-
 func TestSortTags(t *testing.T) {
 	tests := []struct {
 		name string
@@ -157,6 +74,99 @@ func TestSortTags(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			sortTags(tc.tags)
 			assert.Equal(t, tc.want, tc.tags)
+		})
+	}
+}
+
+func TestGenNewTag(t *testing.T) {
+	tests := []struct {
+		name       string
+		rawTags    []string
+		isRelease  bool
+		wantOldTag string
+		wantNewTag string
+	}{
+		{
+			name:       "release empty",
+			rawTags:    []string{},
+			isRelease:  true,
+			wantOldTag: "",
+			wantNewTag: "v0.0.1",
+		},
+		{
+			name: "release with previous release",
+			rawTags: []string{
+				"v0.0.1",
+			},
+			isRelease:  true,
+			wantOldTag: "v0.0.1",
+			wantNewTag: "v0.0.2",
+		},
+		{
+			name: "release with previous release",
+			rawTags: []string{
+				"v0.0.1",
+				"v0.0.1-RC1",
+			},
+			isRelease:  true,
+			wantOldTag: "v0.0.1",
+			wantNewTag: "v0.0.2",
+		},
+		{
+			name: "release with previous rc",
+			rawTags: []string{
+				"v0.0.1",
+				"v0.0.1-RC1",
+				"v0.0.2-RC1",
+			},
+			isRelease:  true,
+			wantOldTag: "v0.0.2-RC1",
+			wantNewTag: "v0.0.2",
+		},
+		{
+			name:       "rc empty",
+			rawTags:    []string{},
+			isRelease:  false,
+			wantOldTag: "",
+			wantNewTag: "v0.0.1-RC1",
+		},
+		{
+			name: "rc with previous release",
+			rawTags: []string{
+				"v0.0.1",
+			},
+			isRelease:  false,
+			wantOldTag: "v0.0.1",
+			wantNewTag: "v0.0.2-RC1",
+		},
+		{
+			name: "rc with previous release",
+			rawTags: []string{
+				"v0.0.1",
+				"v0.0.1-RC1",
+			},
+			isRelease:  false,
+			wantOldTag: "v0.0.1",
+			wantNewTag: "v0.0.2-RC1",
+		},
+		{
+			name: "rc with previous rc",
+			rawTags: []string{
+				"v0.0.1",
+				"v0.0.1-RC1",
+				"v0.0.2-RC1",
+			},
+			isRelease:  false,
+			wantOldTag: "v0.0.2-RC1",
+			wantNewTag: "v0.0.2-RC2",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			gotOldTag, gotNewTag := genNewTag(tc.rawTags, tc.isRelease)
+			assert.Equal(t, tc.wantOldTag, gotOldTag)
+			assert.Equal(t, tc.wantNewTag, gotNewTag)
 		})
 	}
 }

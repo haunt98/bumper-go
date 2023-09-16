@@ -61,7 +61,12 @@ func main() {
 		return
 	}
 
-	newTag := genNewTag(rawTags, flagRelease)
+	oldTag, newTag := genNewTag(rawTags, flagRelease)
+	if oldTag != "" {
+		color.PrintAppOK(NameApp, fmt.Sprintf("Tag: %s -> %s", oldTag, newTag))
+	} else {
+		color.PrintAppOK(NameApp, fmt.Sprintf("New tag: %s", newTag))
+	}
 
 	if flagDryRun {
 		return
