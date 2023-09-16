@@ -84,7 +84,7 @@ func TestGenNewTag(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			got := genNewTag(tc.rawTags, false, tc.isRelease)
+			got := genNewTag(tc.rawTags, tc.isRelease)
 			assert.Equal(t, tc.want, got)
 		})
 	}
