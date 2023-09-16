@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## v0.0.6 (2023-09-16)
+
+### Added
+
+- feat: split git remote from git release (2023-09-16)
+
+- feat: print bold old, new tag in genNewTag (2023-09-16)
+
+- feat: gitlab create release (2023-09-16)
+
+### Others
+
+- chore: cleanup message (2023-09-16)
+
+- refactor: name old tag not latest tag (2023-09-16)
+
+- chore(changelog): generate v0.0.5 (2023-07-20)
+
 ## v0.0.5 (2023-07-20)
 
 ### Others
