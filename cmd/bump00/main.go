@@ -53,7 +53,7 @@ func main() {
 		slog.Error("git remote", "error", err)
 		return
 	}
-	color.PrintAppOK(NameApp, fmt.Sprintf("Hacking %s ...", remoteURL))
+	color.PrintAppOK(NameApp, fmt.Sprintf("Hacking %s", remoteURL))
 
 	rawTags, err := gitGetRawTags(ctx)
 	if err != nil {
