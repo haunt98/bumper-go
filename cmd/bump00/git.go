@@ -21,6 +21,44 @@ var (
 	ErrNotSupportHost = errors.New("not support host")
 )
 
+func gitRemote(ctx context.Context) (*url.URL, error) {
+	gitOuput, err := exec.CommandContext(ctx, "git", "remote", "-v").CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("git: failed to remote: %w", err)
+	}
+	slog.Debug("git remote", "output", gitOuput)
+
+	// Example gitOuput
+	// origin  https://github.com/haunt98/haha.git (fetch)
+	// origin  https://github.com/haunt98/haha.git (push)
+	var rawURL string
+	for _, line := range strings.Split(string(gitOuput), "\n") {
+		line := strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		lines2 := strings.Fields(line)
+		if len(lines2) != 3 {
+			continue
+		}
+
+		// Expect origin
+		if strings.EqualFold(lines2[0], gitRemoteOrigin) {
+			// Only get first
+			rawURL = lines2[1]
+			break
+		}
+	}
+
+	parsedURL, err := url.Parse(rawURL)
+	if err != nil {
+		return nil, fmt.Errorf("git: failed to parse %s: %w", rawURL, err)
+	}
+
+	return parsedURL, nil
+}
+
 func gitGetRawTags(ctx context.Context) ([]string, error) {
 	// Make sure we have latest tags from default remote
 	gitOutput, err := exec.CommandContext(ctx, "git", "fetch", "--tags").CombinedOutput()
@@ -51,7 +89,6 @@ func gitGetRawTags(ctx context.Context) ([]string, error) {
 	return rawTags, nil
 }
 
-// Tag
 func gitTag(ctx context.Context, tag string) error {
 	gitOuput, err := exec.CommandContext(ctx, "git", "tag", tag).CombinedOutput()
 	if err != nil {
@@ -62,9 +99,8 @@ func gitTag(ctx context.Context, tag string) error {
 	return nil
 }
 
-// Push tag
 func gitPush(ctx context.Context, newTag string) error {
-	gitOuput, err := exec.CommandContext(ctx, "git", "push", "origin", newTag).CombinedOutput()
+	gitOuput, err := exec.CommandContext(ctx, "git", "push", gitRemoteOrigin, newTag).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("git: failed to push: %w", err)
 	}
@@ -73,52 +109,17 @@ func gitPush(ctx context.Context, newTag string) error {
 	return nil
 }
 
-func gitRelease(ctx context.Context, tag string) error {
+func gitRelease(ctx context.Context, tag string, remoteURL *url.URL) error {
 	netrcData, err := netrc.ParseFile(netrcPath)
 	if err != nil {
 		return fmt.Errorf("netrc: failed to parse file: %w", err)
 	}
 
-	gitOuput, err := exec.CommandContext(ctx, "git", "remote", "-v").CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("git: failed to remote: %w", err)
-	}
-	slog.Debug("git remote", "output", gitOuput)
-
-	// Example gitOuput
-	// origin  https://github.com/haunt98/haha.git (fetch)
-	// origin  https://github.com/haunt98/haha.git (push)
-	var gitRemoteURLRaw string
-	for _, line := range strings.Split(string(gitOuput), "\n") {
-		line := strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-
-		lines2 := strings.Fields(line)
-		if len(lines2) != 3 {
-			continue
-		}
-
-		// Expect origin
-		if strings.EqualFold(lines2[0], gitRemoteOrigin) {
-			// Only get first
-			gitRemoteURLRaw = lines2[1]
-			break
-		}
-	}
-
-	gitRemoteURL, err := url.Parse(gitRemoteURLRaw)
-	if err != nil {
-		return fmt.Errorf("git: failed to parse %s: %w", gitRemoteURLRaw, err)
-	}
-	slog.Debug("git remote", "url", gitRemoteURL)
-
 	var netrcPassword string
 	for _, machine := range netrcData.Machines {
 		if strings.EqualFold(
 			strings.TrimSpace(machine.Name),
-			strings.TrimSpace(gitRemoteURL.Hostname()),
+			strings.TrimSpace(remoteURL.Hostname()),
 		) {
 			netrcPassword = machine.Password
 		}
@@ -128,8 +129,8 @@ func gitRelease(ctx context.Context, tag string) error {
 		return ErrNetrcMissing
 	}
 
-	if strings.Contains(strings.ToLower(gitRemoteURL.Hostname()), "gitlab") {
-		return gitReleaseGitLab(ctx, netrcPassword, gitRemoteURL, tag)
+	if strings.Contains(strings.ToLower(remoteURL.Hostname()), "gitlab") {
+		return gitReleaseGitLab(ctx, netrcPassword, remoteURL, tag)
 	}
 
 	return ErrNotSupportHost

@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
+
+	"github.com/make-go-great/color-go"
 )
 
 const NameApp = "bump00"
@@ -45,6 +48,13 @@ func main() {
 
 	ctx := context.Background()
 
+	remoteURL, err := gitRemote(ctx)
+	if err != nil {
+		slog.Error("git remote", "error", err)
+		return
+	}
+	color.PrintAppOK(NameApp, fmt.Sprintf("Hacking %s ...", remoteURL))
+
 	rawTags, err := gitGetRawTags(ctx)
 	if err != nil {
 		slog.Error("git get raw tags", "error", err)
@@ -68,7 +78,7 @@ func main() {
 	}
 
 	if flagReleaseRemote {
-		if err := gitRelease(ctx, newTag); err != nil {
+		if err := gitRelease(ctx, newTag, remoteURL); err != nil {
 			slog.Error("git release", "error", err)
 			return
 		}
