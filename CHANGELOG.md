@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.0.7 (2023-12-21)
+
+### Others
+
+- build: upgrade modules (2023-12-21)
+
+- chore: go fix (2023-12-21)
+
+- chore(deps): bump golang.org/x/net from 0.8.0 to 0.17.0 (2023-10-12)
+
+- chore(changelog): generate v0.0.6 (2023-09-16)
+
 ## v0.0.6 (2023-09-16)
 
 ### Added
