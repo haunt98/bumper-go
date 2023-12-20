@@ -2,9 +2,9 @@
 
 all:
 	go mod tidy
+	$(MAKE) format
 	$(MAKE) test-color
 	$(MAKE) lint
-	$(MAKE) format
 	$(MAKE) build
 	$(MAKE) clean
 
@@ -27,6 +27,7 @@ coverage-html:
 	go tool cover -html=coverage.out
 
 lint:
+	go fix ./...
 	golangci-lint run ./...
 
 format:
