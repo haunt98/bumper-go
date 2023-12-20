@@ -9,7 +9,7 @@ require (
 	github.com/make-go-great/netrc-go v0.0.2
 	github.com/spf13/cast v1.5.1
 	github.com/stretchr/testify v1.8.4
-	github.com/xanzy/go-gitlab v0.91.1
+	github.com/xanzy/go-gitlab v0.95.2
 )
 
 require (
