@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## v0.0.8 (2023-12-25)
+
+### Others
+
+- feat(bump00): allow bump minor (2023-12-25)
+
+- chore(changelog): generate v0.0.7 (2023-12-21)
+
 ## v0.0.7 (2023-12-21)
 
 ### Others
