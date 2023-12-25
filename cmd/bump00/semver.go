@@ -41,7 +41,8 @@ func sortTags(tags []*semver.Version) {
 	sort.Sort(Collection(tags))
 }
 
-func genNewTag(rawTags []string, isRelease bool) (string, string) {
+// Version is MAJOR.MINOR.PATCH.PRERELEASE
+func genNewTag(rawTags []string, isRelease, isReleaseMinor bool) (string, string) {
 	tags := make([]*semver.Version, 0, 100)
 	for _, rawTag := range rawTags {
 		tag, err := semver.NewVersion(rawTag)
@@ -59,30 +60,42 @@ func genNewTag(rawTags []string, isRelease bool) (string, string) {
 	if isRelease {
 		// Default tag for release
 		newTagStr = "v0.0.1"
+		if isReleaseMinor {
+			newTagStr = "v0.1.0"
+		}
+
 		if len(tags) > 0 {
 			oldTag := tags[0]
 			oldTagStr = oldTag.String()
 
-			if oldTag.Prerelease() == "" {
-				// Old tag is release
-				// Only bump patch
-				// v0.2.3 -> v0.2.4
-				newTagStr = fmt.Sprintf("v%d.%d.%d",
+			if isReleaseMinor {
+				newTagStr = fmt.Sprintf("v%d.%d.0",
 					oldTag.Major(),
-					oldTag.Minor(),
-					oldTag.Patch()+1,
+					oldTag.Minor()+1,
 				)
 			} else {
-				// Old tag is RC
-				// Release tag is missing
-				// Only remove RC
-				// v0.2.3-RC1 -> v0.2.3
-				newTagStr = fmt.Sprintf("v%d.%d.%d",
-					oldTag.Major(),
-					oldTag.Minor(),
-					oldTag.Patch(),
-				)
+				if oldTag.Prerelease() == "" {
+					// Old tag is release
+					// Only bump patch
+					// v0.2.3 -> v0.2.4
+					newTagStr = fmt.Sprintf("v%d.%d.%d",
+						oldTag.Major(),
+						oldTag.Minor(),
+						oldTag.Patch()+1,
+					)
+				} else {
+					// Old tag is RC
+					// Release tag is missing
+					// Only remove RC
+					// v0.2.3-RC1 -> v0.2.3
+					newTagStr = fmt.Sprintf("v%d.%d.%d",
+						oldTag.Major(),
+						oldTag.Minor(),
+						oldTag.Patch(),
+					)
+				}
 			}
+
 		}
 	} else {
 		// Default tag for RC

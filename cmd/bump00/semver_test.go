@@ -80,27 +80,48 @@ func TestSortTags(t *testing.T) {
 
 func TestGenNewTag(t *testing.T) {
 	tests := []struct {
-		name       string
-		rawTags    []string
-		isRelease  bool
-		wantOldTag string
-		wantNewTag string
+		name           string
+		rawTags        []string
+		isRelease      bool
+		isReleaseMinor bool
+		wantOldTag     string
+		wantNewTag     string
 	}{
 		{
-			name:       "release empty",
-			rawTags:    []string{},
-			isRelease:  true,
-			wantOldTag: "",
-			wantNewTag: "v0.0.1",
+			name:           "release empty",
+			rawTags:        []string{},
+			isRelease:      true,
+			isReleaseMinor: false,
+			wantOldTag:     "",
+			wantNewTag:     "v0.0.1",
+		},
+		{
+			name:           "release minor empty",
+			rawTags:        []string{},
+			isRelease:      true,
+			isReleaseMinor: true,
+			wantOldTag:     "",
+			wantNewTag:     "v0.1.0",
 		},
 		{
 			name: "release with previous release",
 			rawTags: []string{
 				"v0.0.1",
 			},
-			isRelease:  true,
-			wantOldTag: "v0.0.1",
-			wantNewTag: "v0.0.2",
+			isRelease:      true,
+			isReleaseMinor: false,
+			wantOldTag:     "v0.0.1",
+			wantNewTag:     "v0.0.2",
+		},
+		{
+			name: "release minor with previous release",
+			rawTags: []string{
+				"v0.0.1",
+			},
+			isRelease:      true,
+			isReleaseMinor: true,
+			wantOldTag:     "v0.0.1",
+			wantNewTag:     "v0.1.0",
 		},
 		{
 			name: "release with previous release",
@@ -108,9 +129,21 @@ func TestGenNewTag(t *testing.T) {
 				"v0.0.1",
 				"v0.0.1-RC1",
 			},
-			isRelease:  true,
-			wantOldTag: "v0.0.1",
-			wantNewTag: "v0.0.2",
+			isRelease:      true,
+			isReleaseMinor: false,
+			wantOldTag:     "v0.0.1",
+			wantNewTag:     "v0.0.2",
+		},
+		{
+			name: "release minor with previous release",
+			rawTags: []string{
+				"v0.0.1",
+				"v0.0.1-RC1",
+			},
+			isRelease:      true,
+			isReleaseMinor: true,
+			wantOldTag:     "v0.0.1",
+			wantNewTag:     "v0.1.0",
 		},
 		{
 			name: "release with previous rc",
@@ -119,9 +152,22 @@ func TestGenNewTag(t *testing.T) {
 				"v0.0.1-RC1",
 				"v0.0.2-RC1",
 			},
-			isRelease:  true,
-			wantOldTag: "v0.0.2-RC1",
-			wantNewTag: "v0.0.2",
+			isRelease:      true,
+			isReleaseMinor: false,
+			wantOldTag:     "v0.0.2-RC1",
+			wantNewTag:     "v0.0.2",
+		},
+		{
+			name: "release minor with previous rc",
+			rawTags: []string{
+				"v0.0.1",
+				"v0.0.1-RC1",
+				"v0.0.2-RC1",
+			},
+			isRelease:      true,
+			isReleaseMinor: true,
+			wantOldTag:     "v0.0.2-RC1",
+			wantNewTag:     "v0.1.0",
 		},
 		{
 			name:       "rc empty",
@@ -164,7 +210,7 @@ func TestGenNewTag(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			gotOldTag, gotNewTag := genNewTag(tc.rawTags, tc.isRelease)
+			gotOldTag, gotNewTag := genNewTag(tc.rawTags, tc.isRelease, tc.isReleaseMinor)
 			assert.Equal(t, tc.wantOldTag, gotOldTag)
 			assert.Equal(t, tc.wantNewTag, gotNewTag)
 		})

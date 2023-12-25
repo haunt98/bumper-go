@@ -16,6 +16,7 @@ var (
 	flagDebug         bool
 	flagDryRun        bool
 	flagRelease       bool
+	flagReleaseMinor  bool
 	flagReleaseRemote bool
 )
 
@@ -29,8 +30,9 @@ const (
 func init() {
 	flag.BoolVar(&flagDebug, "debug", false, "Debug mode, print eveyrthing")
 	flag.BoolVar(&flagDryRun, "dry-run", false, "Will not do anything dangerous")
-	flag.BoolVar(&flagRelease, "release", false, "Bump minor version, not RC anymore")
-	flag.BoolVar(&flagReleaseRemote, "release-remote", false, "Release to the wild")
+	flag.BoolVar(&flagRelease, "release", false, "Bump patch version, not RC anymore")
+	flag.BoolVar(&flagReleaseMinor, "release-minor", false, "Bump minor not patch when release")
+	flag.BoolVar(&flagReleaseRemote, "release-remote", false, "Release to the wild, support GitLab for now")
 }
 
 func main() {
@@ -61,7 +63,7 @@ func main() {
 		return
 	}
 
-	oldTag, newTag := genNewTag(rawTags, flagRelease)
+	oldTag, newTag := genNewTag(rawTags, flagRelease, flagReleaseMinor)
 	if oldTag != "" {
 		color.PrintAppOK(NameApp, fmt.Sprintf("Tag: %s -> %s", oldTag, newTag))
 	} else {
