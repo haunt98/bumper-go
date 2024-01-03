@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.0.9 (2024-01-03)
+
+### Added
+
+- feat: remove list release gitlab (2024-01-03)
+
+### Others
+
+- chore(changelog): generate v0.0.8 (2023-12-25)
+
 ## v0.0.8 (2023-12-25)
 
 ### Others
