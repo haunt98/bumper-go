@@ -145,12 +145,6 @@ func gitReleaseGitLab(ctx context.Context, token string, remoteURL *url.URL, tag
 	pid := strings.Trim(remoteURL.Path, "/")
 	pid = strings.TrimSuffix(pid, ".git")
 
-	// Like a demo
-	// If OK should we process to create release later
-	if _, _, err := g.Releases.ListReleases(pid, nil); err != nil {
-		return fmt.Errorf("gitlab: failed to list releases: %w", err)
-	}
-
 	color.PrintAppOK(NameApp, "Release description:")
 	description := ioe.ReadInput()
 
