@@ -13,11 +13,12 @@ import (
 const NameApp = "bump00"
 
 var (
-	flagDebug         bool
-	flagDryRun        bool
-	flagRelease       bool
-	flagReleaseMinor  bool
-	flagReleaseRemote bool
+	flagDebug          bool
+	flagDryRun         bool
+	flagRelease        bool
+	flagReleaseMinor   bool
+	flagReleaseRemote  bool
+	flagReleaseMessage string
 )
 
 const (
@@ -33,6 +34,7 @@ func init() {
 	flag.BoolVar(&flagRelease, "release", false, "Bump patch version, not RC anymore")
 	flag.BoolVar(&flagReleaseMinor, "release-minor", false, "Bump minor not patch when release")
 	flag.BoolVar(&flagReleaseRemote, "release-remote", false, "Release to the wild, support GitLab for now")
+	flag.StringVar(&flagReleaseMessage, "release-message", "", "What you release my friend?")
 }
 
 func main() {
@@ -85,7 +87,7 @@ func main() {
 	}
 
 	if flagReleaseRemote {
-		if err := gitRelease(ctx, newTag, remoteURL); err != nil {
+		if err := gitRelease(ctx, newTag, remoteURL, flagReleaseMessage); err != nil {
 			slog.Error("git release", "error", err)
 			return
 		}

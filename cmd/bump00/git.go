@@ -109,7 +109,7 @@ func gitPush(ctx context.Context, newTag string) error {
 	return nil
 }
 
-func gitRelease(ctx context.Context, tag string, remoteURL *url.URL) error {
+func gitRelease(ctx context.Context, tag string, remoteURL *url.URL, releaseMsg string) error {
 	netrcData, err := netrc.ParseFile(netrcPath)
 	if err != nil {
 		return fmt.Errorf("netrc: failed to parse file: %w", err)
@@ -130,13 +130,13 @@ func gitRelease(ctx context.Context, tag string, remoteURL *url.URL) error {
 	}
 
 	if strings.Contains(strings.ToLower(remoteURL.Hostname()), "gitlab") {
-		return gitReleaseGitLab(ctx, netrcPassword, remoteURL, tag)
+		return gitReleaseGitLab(ctx, netrcPassword, remoteURL, tag, releaseMsg)
 	}
 
 	return ErrNotSupportHost
 }
 
-func gitReleaseGitLab(ctx context.Context, token string, remoteURL *url.URL, tag string) error {
+func gitReleaseGitLab(ctx context.Context, token string, remoteURL *url.URL, tag, releaseMsg string) error {
 	g, err := gitlab.NewClient(token, gitlab.WithBaseURL("https://"+remoteURL.Hostname()+"/api/v4"))
 	if err != nil {
 		return fmt.Errorf("gitlab: failed to new client: %w", err)
@@ -145,13 +145,15 @@ func gitReleaseGitLab(ctx context.Context, token string, remoteURL *url.URL, tag
 	pid := strings.Trim(remoteURL.Path, "/")
 	pid = strings.TrimSuffix(pid, ".git")
 
-	color.PrintAppOK(NameApp, "Release description:")
-	description := ioe.ReadInput()
+	if releaseMsg == "" {
+		color.PrintAppOK(NameApp, "Release message:")
+		releaseMsg = ioe.ReadInput()
+	}
 
 	if _, _, err := g.Releases.CreateRelease(pid, &gitlab.CreateReleaseOptions{
 		Name:        &tag,
 		TagName:     &tag,
-		Description: &description,
+		Description: &releaseMsg,
 	}); err != nil {
 		return fmt.Errorf("gitlab: failed to create release: %w", err)
 	}
