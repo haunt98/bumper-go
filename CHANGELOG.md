@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## v0.0.10 (2024-03-15)
+
+### Added
+
+- feat: add release message (2024-03-15)
+
+### Others
+
+- Merge branch 'main' of https://github.com/haunt98/bumper-go (2024-03-15)
+
+- chore: remove go fix (2024-03-01)
+
+- chore(changelog): generate v0.0.9 (2024-01-03)
+
 ## v0.0.9 (2024-01-03)
 
 ### Added
