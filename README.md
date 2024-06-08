@@ -1,5 +1,9 @@
 # bumper
 
+[![Go](https://github.com/haunt98/bumper-go/actions/workflows/go.yml/badge.svg)](https://github.com/haunt98/bumper-go/actions/workflows/go.yml)
+[![gitleaks](https://github.com/haunt98/bumper-go/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/haunt98/bumper-go/actions/workflows/gitleaks.yml)
+[![Latest Version](https://img.shields.io/github/v/tag/haunt98/bumper-go)](https://github.com/haunt98/bumper-go/tags)
+
 Collection of bumping version scripts.
 
 Because there is no 1 rule fit all.
@@ -20,8 +24,10 @@ RC mode aka default mode:
 bump00
 ```
 
-- If latest tag is release, it will bump patch with `RC1`: `v1.2.3` -> `v1.2.4-RC1`
-- If latest tag is RC, it will only bump RC: `v1.2.4-RC1` -> `v1.2.4-RC2` -> `v1.2.4-RC3`
+- If latest tag is release, it will bump patch with `RC1`: `v1.2.3` ->
+  `v1.2.4-RC1`
+- If latest tag is RC, it will only bump RC: `v1.2.4-RC1` -> `v1.2.4-RC2` ->
+  `v1.2.4-RC3`
 
 Release mode:
 
