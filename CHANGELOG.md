@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## v0.0.11 (2024-10-16)
+
+### Others
+
+- build: update go-gitlab to v0.112.0 (2024-10-16)
+
+- Merge branch 'main' of https://github.com/haunt98/bumper-go (2024-08-22)
+
+- chore: migrate to justfile (2024-08-22)
+
+- chore: add badges (2024-06-08)
+
+- chore: add gitleaks (2024-06-08)
+
+- chore(deps): bump golang.org/x/net from 0.17.0 to 0.23.0 (#3) (2024-04-19)
+
+- chore(changelog): generate v0.0.10 (2024-03-15)
+
 ## v0.0.10 (2024-03-15)
 
 ### Added
