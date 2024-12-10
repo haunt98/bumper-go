@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.0.12 (2024-12-10)
+
+### Others
+
+- build: replace xanzy/go-gitlab with gitlab-org/api/client-go (2024-12-10)
+
+- build: bump go-gitlab to v0.113.0 (2024-11-06)
+
+- chore: sync lint (2024-10-26)
+
+- chore(changelog): generate v0.0.11 (2024-10-16)
+
 ## v0.0.11 (2024-10-16)
 
 ### Others
