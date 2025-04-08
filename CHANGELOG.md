@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## v0.0.13 (2025-04-08)
+
+### Others
+
+- chore: migrate golangci-lint v2 (2025-04-08)
+
+- chore: deprecated check-shadowing in govet linter (2025-01-05)
+
+- chore(changelog): generate v0.0.12 (2024-12-10)
+
+### Build
+
+- chore(deps): bump golang.org/x/net from 0.33.0 to 0.36.0 (#6) (2025-03-13)
+
+- chore(deps): bump golang.org/x/net from 0.23.0 to 0.33.0 (#5) (2025-03-04)
+
+- build: bump go.mod 1.24 (2025-03-04)
+
 ## v0.0.12 (2024-12-10)
 
 ### Others
