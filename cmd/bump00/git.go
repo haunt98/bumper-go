@@ -32,7 +32,7 @@ func gitRemote(ctx context.Context) (*url.URL, error) {
 	// origin  https://github.com/haunt98/haha.git (fetch)
 	// origin  https://github.com/haunt98/haha.git (push)
 	var rawURL string
-	for _, line := range strings.Split(string(gitOuput), "\n") {
+	for line := range strings.SplitSeq(string(gitOuput), "\n") {
 		line := strings.TrimSpace(line)
 		if line == "" {
 			continue
@@ -76,7 +76,7 @@ func gitGetRawTags(ctx context.Context) ([]string, error) {
 
 	// Extract raw tags from git output
 	rawTags := make([]string, 0, 100)
-	for _, rawTag := range strings.Split(string(gitOutput), "\n") {
+	for rawTag := range strings.SplitSeq(string(gitOutput), "\n") {
 		rawTag := strings.TrimSpace(rawTag)
 		if rawTag == "" {
 			continue
