@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## v0.0.14 (2025-07-19)
+
+### Others
+
+- chore(changelog): generate v0.0.13 (2025-04-08)
+
+### Build
+
+- chore(deps): bump golang.org/x/oauth2 from 0.6.0 to 0.27.0 (#8) (2025-07-19)
+
+- chore(deps): bump golang.org/x/net from 0.36.0 to 0.38.0 (#7) (2025-04-17)
+
 ## v0.0.13 (2025-04-08)
 
 ### Others
