@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## v0.0.15 (2026-04-20)
+
+### Added
+
+- feat(bump00): handle git tag sign (2026-04-20)
+
+### Others
+
+- chore (2026-03-21)
+
+- chore: lint (2026-03-21)
+
+- lint (2026-03-10)
+
+- chore: ubuntu-latest -> ubuntu-slim (2025-12-20)
+
+- chore(changelog): generate v0.0.14 (2025-07-19)
+
+### Build
+
+- build: bump go.mod (2025-12-18)
+
 ## v0.0.14 (2025-07-19)
 
 ### Others
