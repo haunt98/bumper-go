@@ -1,11 +1,13 @@
 package main
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
 	"log/slog"
 	"net/url"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -89,12 +91,16 @@ func gitGetRawTags(ctx context.Context) ([]string, error) {
 	return rawTags, nil
 }
 
-func gitTag(ctx context.Context, tag string) error {
-	gitOuput, err := exec.CommandContext(ctx, "git", "tag", tag).CombinedOutput()
-	if err != nil {
+func gitTag(ctx context.Context, tag, releaseMsg string) error {
+	releaseMsg = cmp.Or(releaseMsg, tag)
+
+	cmd := exec.CommandContext(ctx, "git", "tag", "-a", tag, "-m", releaseMsg)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("git: failed to tag: %w", err)
 	}
-	slog.Debug("git tag", "output", gitOuput)
 
 	return nil
 }

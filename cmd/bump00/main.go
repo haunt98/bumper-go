@@ -76,7 +76,7 @@ func main() {
 		return
 	}
 
-	if err := gitTag(ctx, newTag); err != nil {
+	if err := gitTag(ctx, newTag, flagReleaseMessage); err != nil {
 		slog.Error("git tag", "error", err)
 		return
 	}
