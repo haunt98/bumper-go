@@ -69,7 +69,8 @@ func genNewTag(rawTags []string, isRelease, isReleaseMinor bool) (string, string
 			oldTagStr = oldTag.String()
 
 			if isReleaseMinor {
-				newTagStr = fmt.Sprintf("v%d.%d.0",
+				newTagStr = fmt.Sprintf(
+					"v%d.%d.0",
 					oldTag.Major(),
 					oldTag.Minor()+1,
 				)
@@ -78,7 +79,8 @@ func genNewTag(rawTags []string, isRelease, isReleaseMinor bool) (string, string
 					// Old tag is release
 					// Only bump patch
 					// v0.2.3 -> v0.2.4
-					newTagStr = fmt.Sprintf("v%d.%d.%d",
+					newTagStr = fmt.Sprintf(
+						"v%d.%d.%d",
 						oldTag.Major(),
 						oldTag.Minor(),
 						oldTag.Patch()+1,
@@ -88,7 +90,8 @@ func genNewTag(rawTags []string, isRelease, isReleaseMinor bool) (string, string
 					// Release tag is missing
 					// Only remove RC
 					// v0.2.3-RC1 -> v0.2.3
-					newTagStr = fmt.Sprintf("v%d.%d.%d",
+					newTagStr = fmt.Sprintf(
+						"v%d.%d.%d",
 						oldTag.Major(),
 						oldTag.Minor(),
 						oldTag.Patch(),
@@ -115,7 +118,8 @@ func genNewTag(rawTags []string, isRelease, isReleaseMinor bool) (string, string
 				// Old tag is already release
 				// Bump patch with RC1
 				// v0.2.3 -> v0.2.4-RC1
-				newTagStr = fmt.Sprintf("v%d.%d.%d-RC1",
+				newTagStr = fmt.Sprintf(
+					"v%d.%d.%d-RC1",
 					oldTag.Major(),
 					oldTag.Minor(),
 					oldTag.Patch()+1,
@@ -126,7 +130,8 @@ func genNewTag(rawTags []string, isRelease, isReleaseMinor bool) (string, string
 				// Only bump RC
 				// v0.2.3-RC1 -> v0.2.3-RC2
 				oldPrereleaseNum := cast.ToInt(strings.TrimLeft(oldPrerelease, "RC"))
-				newTagStr = fmt.Sprintf("v%d.%d.%d-RC%d",
+				newTagStr = fmt.Sprintf(
+					"v%d.%d.%d-RC%d",
 					oldTag.Major(),
 					oldTag.Minor(),
 					oldTag.Patch(),
